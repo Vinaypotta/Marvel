@@ -1,0 +1,689 @@
+@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+
+/* GLOBAL */
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Bangers', cursive;
+    background: white;
+}
+
+/**  --------------------------------------------------  NAVBAR --------------------------------------------*/
+header {
+    width: 100%;
+    background-color: black;
+    min-height: 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.container {
+    width: 1366px;
+    margin: auto;
+    /* border: 2px solid red; */
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 85%;
+    /* border:2px solid blue; */
+    margin: auto;
+}
+
+ul {
+    color: white;
+    display: flex;
+    gap: 60px;
+}
+
+ul li {
+    list-style: none;
+}
+
+ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+.title h2 {
+    color: red;
+    font-family: 'marvelregular';
+    font-size: 4rem;
+}
+
+
+/** ===========================================================Carousel================================================*/
+#carousel {
+    width: 100%;
+    min-height: 500px;
+    background-size: cover;
+    transition: 1s ease-in-out;
+    background-position: 50% 40%;
+    /* border: 3px solid yellow; */
+}
+
+.blackLine {
+    width: 100%;
+    min-height: 500px;
+    background-image: linear-gradient(0.50turn, transparent, black, transparent);
+}
+
+.sub-container {
+    width: 85%;
+    margin: auto;
+    /* border:2px solid black */
+}
+
+.title2 {
+    width: 70%;
+    min-height: 500px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin: auto;
+    /* border:2px solid green; */
+    font-size: 1.4rem;
+    text-shadow: 2px 2px black;
+    color: white;
+}
+
+.title2 h2 {
+    font-size: 5rem;
+}
+
+
+/**----------------------------------------------Search Content-----------------------------------------------*/
+.searchCharacters {
+    width: 100%;
+    /* border: 2px solid pink; */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), black), url(img6.jpg);
+    background-size: cover;
+    background-position: center center;
+    min-height: 300px;
+}
+
+.search {
+    width: 85%;
+    /* border:2px solid blue; */
+    margin: auto;
+    height: auto;
+    background-image: linear-gradient(0.25turn, transparent, rgb(187, 176, 25), transparent);
+    padding: 10px 0px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search .img {
+    width: 450px;
+    height: auto;
+    background-position: 50% 50%;
+    background-size: cover;
+}
+
+.search .img img {
+    width: 100%;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 90%);
+}
+
+.searchArea {
+    /* border:2px solid olive; */
+    width: 500px;
+    min-height: 200px;
+    text-shadow: 2px 2px black;
+    color: whitesmoke;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+#character {
+    font-family: inherit;
+    padding: 8px;
+    width: 250px;
+    outline: none;
+    border: none;
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+#SearchCharacter {
+    color: black;
+    background-color: lightgray;
+    width: 140px;
+    cursor: pointer;
+    padding: 8px;
+    outline: none;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    border: none;
+    transition: 1s;
+    font-family: inherit;
+    margin-left: -3px;
+}
+
+#SearchCharacter:hover {
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/**----------------------Charcter Results--------------------------------------*/
+#characterResults {
+    width: 100%;
+    /* border: 2px solid blue; */
+    background-position: center;
+    background-size: cover;
+    background-repeat: repeat;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), black), url("comicss.jpg");
+    min-height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+#charcters {
+    width: 85%;
+    /* border: 2px solid blue; */
+    display: flex;
+    justify-content: space-between;
+    margin: auto;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.character {
+    width: 300px;
+    height: 450px;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    margin: 5px 0;
+    transition: 0.7s ease-out;
+    box-shadow: 0 2px 6px 0 rgb(0 0 0 / 80%);
+}
+
+.details {
+    color: #fff;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+    text-shadow: 2px 2px black;
+}
+
+
+
+/**Comics Search*/
+.searchComics {
+    width: 100%;
+    /* border: 2px solid pink; */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), black), url(img8.png);
+    background-size: cover;
+    background-position: center center;
+    min-height: 300px;
+}
+
+.search-comics {
+    width: 85%;
+    /* border:2px solid blue; */
+    margin: auto;
+    height: auto;
+    background-image: linear-gradient(0.25turn, transparent, rgb(187, 25, 25), transparent);
+    padding: 10px 0px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search-comics .img {
+    width: 450px;
+    height: auto;
+    background-position: 50% 50%;
+    background-size: cover;
+}
+
+.search-comics .img img {
+    width: 100%;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 90%);
+}
+
+#Comic-title-input,
+#Comic-id-input {
+    font-family: inherit;
+    padding: 8px;
+    width: 250px;
+    outline: none;
+    border: none;
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-bottom: 25px;
+}
+
+#SearchComicByTitle,
+#SearchComicByID {
+    color: black;
+    background-color: lightgray;
+    width: 140px;
+    cursor: pointer;
+    padding: 8px;
+    outline: none;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    border: none;
+    transition: 1s;
+    font-family: inherit;
+    margin-left: -3px;
+}
+
+#SearchComicByTitle:hover,
+#SearchComicByID:hover {
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+
+
+/** ------------------------------------Comic Resulsts------------------------------------- */
+.comicresults {
+    width: 100%;
+    /* border: 2px solid blue; */
+    background-position: center;
+    background-size: cover;
+    background-repeat: repeat;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), black), url(img7.jpg);
+    min-height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.comics {
+    width: 85%;
+    /* border: 2px solid blue; */
+    display: flex;
+    justify-content: space-between;
+    margin: auto;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.comic {
+    width: 300px;
+    height: 450px;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    margin: 5px 0;
+    transition: 0.7s ease-out;
+    box-shadow: 0 2px 6px 0 rgb(0 0 0 / 80%);
+}
+
+
+
+/**----------------------------------------------Description Search--------------------------------------------*/
+.searchDescription {
+    width: 100%;
+    /* border: 2px solid pink; */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), black), url(img9.jpg);
+    background-size: cover;
+    background-position: center center;
+    min-height: 300px;
+}
+
+.search-Description {
+    width: 85%;
+    /* border:2px solid blue; */
+    margin: auto;
+    height: auto;
+    background-image: linear-gradient(0.25turn, transparent, rgb(25, 149, 187), transparent);
+    padding: 10px 0px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search-Description .img {
+    width: 450px;
+    height: auto;
+    background-position: 50% 50%;
+    background-size: cover;
+}
+
+.search-Description .img img {
+    width: 100%;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 90%);
+}
+
+#UPC-input,
+#ISBN-input {
+    font-family: inherit;
+    padding: 8px;
+    width: 250px;
+    outline: none;
+    border: none;
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-bottom: 25px;
+}
+
+#SearchComicByUPC,
+#SearchComicByISBN {
+    color: black;
+    background-color: lightgray;
+    width: 140px;
+    cursor: pointer;
+    padding: 8px;
+    outline: none;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    border: none;
+    transition: 1s;
+    font-family: inherit;
+    margin-left: -3px;
+}
+
+#SearchComicByUPC:hover,
+#SearchComicByISBN:hover {
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+
+/** -------------------------------COMIC DESCRIPTION Result--------------------------------- */
+.DescriptionResult {
+    width: 100%;
+    /* border: 2px solid blue; */
+    background-position: center;
+    background-size: cover;
+    background-repeat: repeat;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), black), url(img10.jpg);
+    min-height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.description-details {
+    font-size: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 500px;
+    color: white;
+}
+
+.comic-img {
+    width: 300px;
+    height: 450px;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    margin: 5px 0;
+    transition: 0.7s ease-out;
+    box-shadow: 0 2px 6px 0 rgb(0 0 0 / 80%);
+}
+
+.description {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+footer {
+    width: 100%;
+    background-color: black;
+    min-height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+footer p {
+    color: whitesmoke;
+    font-size: 1.2rem;
+}
+
+
+
+
+
+
+
+
+.img-0 {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-size: cover;
+    transition: all 1s;
+}
+
+.img-0:hover {
+    transform: scale(1.1);
+}
+
+#img1,
+#img2,
+#img3,
+#img4,
+#img5,
+#img6 {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-size: cover;
+    transition: all 0.7s;
+    background-image: linear-gradient(to bottom, transparent 55%, black), url(http://i.annihil.us/u/prod/marvel/i/mg/6/60/5261a80a67e7d/portrait_uncanny.jpg);
+}
+
+#img1:hover,
+#img2:hover,
+#img3:hover,
+#img4:hover,
+#img5:hover,
+#img6:hover {
+    transform: scale(1.1);
+}
+
+#img2 {
+    background-image: linear-gradient(to bottom, transparent 55%, black), url('http://i.annihil.us/u/prod/marvel/i/mg/6/40/5274137e3e2cd/portrait_uncanny.jpg');
+}
+
+#img3 {
+    background-image: linear-gradient(to bottom, transparent 55%, black), url('http://i.annihil.us/u/prod/marvel/i/mg/3/60/53176bb096d17/portrait_uncanny.jpg');
+}
+
+#img4 {
+    background-image: linear-gradient(to bottom, transparent 55%, black), url('http://i.annihil.us/u/prod/marvel/i/mg/6/80/60a572439d4ee/portrait_uncanny.jpg');
+}
+
+#img5 {
+    background-image: linear-gradient(to bottom, transparent 55%, black), url('http://i.annihil.us/u/prod/marvel/i/mg/3/f0/5d2c926187c93/portrait_uncanny.jpg');
+}
+
+#img6 {
+    background-image: linear-gradient(to bottom, transparent 55%, black), url('http://i.annihil.us/u/prod/marvel/i/mg/f/a0/5f2d6cceb2e77/portrait_uncanny.jpg');
+}
+
+
+@media (max-width:1366px) {
+    .container {
+        max-width: 100%;
+    }
+}
+
+@media(max-width:1280px) {
+
+    .characterResults,
+    .comicresults {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        padding: 20px 0;
+    }
+
+    #charcters,
+    .comics,
+    .description {
+        padding: 20px 0;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .comic-img,
+    .comic,
+    .character {
+        gap: 2px;
+    }
+
+    #comics {
+        flex-wrap: wrap-reverse;
+    }
+}
+
+@media(max-width:768px) {
+    .title2 h2 {
+        font-size: 3.5rem;
+    }
+
+    nav {
+        padding: 20px 0;
+        flex-direction: column;
+    }
+
+    .sub-container,
+    .search,
+    #charcters,
+    .search-comics,
+    .comics,
+    .search-Description,
+    .description {
+        width: 95%;
+    }
+
+    .title {
+        padding-left: 0px;
+        margin: auto;
+        text-align: center;
+    }
+
+    .title2 {
+        width: 95%;
+    }
+
+    .search .img,
+    .search-Description .img,
+    .search-comics .img {
+        width: 100%;
+    }
+
+    .searchArea {
+        width: 95%;
+        text-align: center;
+        align-items: center;
+    }
+
+    .character {
+        width: 75%;
+    }
+
+    .comic {
+        width: 75%;
+    }
+
+    .comic-img {
+        width: 75%;
+    }
+
+    .isbn {
+        width: 75%;
+    }
+
+    #SearchComicByUPC,
+    #SearchComicByISBN,
+    #SearchComicByTitle,
+    #SearchComicByID,
+    #SearchCharacter {
+        width: 30%;
+    }
+
+    #Comic-title-input,
+    #Comic-id-input,
+    #character,
+    #UPC-input,
+    #ISBN-input {
+        width: 65%;
+    }
+
+    .description-details {
+        margin-top: 10px;
+        text-align: center;
+    }
+
+}
+
+
+@media(max-width:480px) {
+    #carousel h1 {
+        font-size: 2rem;
+    }
+
+    .title2 h2 {
+        font-size: 1.5rem;
+    }
+
+    .title2 p {
+        font-size: 0.8rem;
+    }
+
+    #Comic-title-input,
+    #Comic-id-input,
+    #character,
+    #UPC-input,
+    #ISBN-input {
+        width: 60%;
+    }
+
+    .character {
+        width: 100%;
+    }
+
+    .comic {
+        width: 100%;
+    }
+
+    .comic-img {
+        width: 75%;
+    }
+
+    .isbn {
+        width: 100%;
+    }
+}

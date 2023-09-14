@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="stylesheet.css">
+    <link rel="shortcut icon" type="image/png" href="spiderman.png" />
+    <title>Marvel info</title>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="title">
+                    <h2>MARVEL</h2>
+                </div>
+                <div class="links">
+                    <ul>
+                        <li><a href="#Section-1">Character</a></li>
+                        <li><a href="#section-2">Comics</a></li>
+                        <li><a href="#section-3">Description</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+    <section id="carousel" style="background-image: url(img0.jpg)">
+        <div class="blackLine">
+            <div class="container">
+                <div class="sub-container">
+                    <div class="title2">
+                        <h2>THE MARVEL COMICS API</h2>
+                        <p>A tool to help developers everywhere create amazing, uncanny and incredible web sites and
+                            applications using data from the 70-plus years of the Marvel age of comics.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="searchCharacters" id="Section-1">
+        <div class="container">
+            <div class="search">
+                <div class="img">
+                    <img src="wolverine (2).jpg" alt="" srcset="">
+                </div>
+                <div class="searchArea">
+                    <br>
+                    <h2>Character</h2>
+                    <p>Fetch the image and ID of your favorite Marvel character. You can use the ID to search for their
+                        comic books!</p>
+                    <br>
+                    <div>
+                        <input type="text" name="" id="character" placeholder="Character Name...">
+                        <button id="SearchCharacter" name="Search">Search</button>
+                    </div>
+                    <p id="Warning1" style="Color:red"></p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="characterResults">
+        <div class="container">
+            <div id="charcters">
+                <div class="character">
+                    <div id="img1"></div>
+                    <div class="details">
+                        <p id="Character_Name">Black Panther</p>
+                        <p id="Character_Id">1545646465</p>
+                    </div>
+                </div>
+                <div class="character">
+                    <div id="img2"></div>
+                    <div class="details">
+                        <p id="Character_Name">Black Panther</p>
+                        <p id="Character_Id">1545646465</p>
+                    </div>
+                </div>
+                <div class="character">
+                    <div id="img3"></div>
+                    <div class="details">
+                        <p id="Character_Name">Black Panther</p>
+                        <p id="Character_Id">1545646465</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="searchComics" id="section-2">
+        <div class="container">
+            <div class="search-comics">
+                <div class="searchArea">
+                    <br>
+                    <h2>COMICS</h2>
+                    <p>Fetch a collection of comics from your favorite Marvel character. Enter the first words of the title or character ID to display the comics!</p>
+                    <br>
+                    <div>
+                        <input type="text" name="" id="Comic-title-input" placeholder="Comic title starts with...">
+                        <button id="SearchComicByTitle" name="Search">Search</button>
+                    </div>
+                    <div>
+                        <input type="text" name="" id="Comic-id-input" placeholder="characterID...">
+                        <button id="SearchComicByID" name="Search">Search</button>
+                    </div>
+                    <p id="Warning2" style="Color:red"></p>
+                </div>
+                <div class="img">
+                    <img src="juggernaut.jpg" alt="" srcset="">
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="comicresults">
+        <div class="container">
+            <div class="comics">
+                <div class="comic">
+                    <div id="img4">
+                    </div>
+                    <div class="details">
+                        <p>The Amazing Spider-Man (2018) #56</p>
+                        <p>ISBN: 978-1-302-92605-2</p>
+                    </div>
+                </div>
+                <div class="comic">
+                    <div id="img5">
+                    </div>
+                    <div class="details">
+                        <p>The Amazing Spider-Man (2018) #56</p>
+                        <p>ISBN: 978-1-302-92605-2</p>
+                    </div>
+                </div>
+                <div class="comic">
+                    <div id="img6">
+                    </div>
+                    <div class="details">
+                        <p>The Amazing Spider-Man (2018) #56</p>
+                        <p>ISBN: 978-1-302-92605-2</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="searchDescription" id="section-3">
+        <div class="container">
+            <div class="search-Description">
+                <div class="img">
+                    <img src="dominoe.jpg" alt="" srcset="">
+                </div>
+                <div class="searchArea">
+                    <br>
+                    <h2>Description</h2>
+                    <p>Enter the UPC or ISBN of a comic book to read a short description!</p>
+                    <br>
+                    <div>
+                        <input type="text" name="" id="UPC-input" placeholder="UPC...">
+                        <button id="SearchComicByUPC" name="Search">Search</button>
+                    </div>
+                    <div>
+                        <input type="text" name="" id="ISBN-input" placeholder="ISBN...">
+                        <button id="SearchComicByISBN" name="Search">Search</button>
+                    </div>
+                    <p id="Warning3" style="Color:red"></p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="DescriptionResult">
+        <div class="container">
+            <div class="description">
+                <div class="comic-img">
+                    <!-- <img class="img-0" src="https://i.annihil.us/u/prod/marvel/i/mg/6/03/5159e157e6040/portrait_uncanny.jpg" alt="" srcset=""> -->
+                    <div id="img4"></div>
+                </div>
+                <div class="description-details">
+                    <h2>X-Men (2010) #29</h2>
+                    <p>With the X-Men suffering from inner turmoil, a lost team of Skrulls infiltrates Utopia. As Pixie is discovered missing, the X-Men fear the worst.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <p>Developed by Vinay Potta</p>
+    </footer>
+    <script src="scrpit.js"></script>
+</body>
+
+</html>
