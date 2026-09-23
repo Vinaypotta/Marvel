@@ -26,8 +26,6 @@ The app uses:
 - Superhero API for character data and images
 - Comic Vine API for comic issues, covers, and descriptions
 
-API keys are currently configured in `scrpit.js`. These keys are visible to anyone who can inspect the browser source. For production use, move API requests to a backend proxy and rotate exposed keys.
-
 ## Project Files
 
 - `index.html` - Page structure and search controls
