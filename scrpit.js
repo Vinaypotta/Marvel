@@ -1,367 +1,621 @@
 const imageArray = ["img2.jpg", "img1.jpg", "img0.jpg", "img3.jpg", "img4.jpg", "img11.jpg", "img12.jpg", "img13.jpg", "img14.jpg", "img15.jpg", "img16.jpg"];
-let slider = document.getElementById("carousel")
-let imageindex = 0;
-let API = "97f7d31035731dec9658307c50fc8aca"
-let Hash = "11df1c65f26cd067ffd321103f292e75"
-sliding = () => {
-    // console.log(imageArray[imageindex] + "is displaying")
-    slider.style.backgroundImage = `url(${imageArray[imageindex]})`;
-    imageindex++;
-    if (imageindex > imageArray.length - 1) {
-        imageindex = 0;
+
+const imageSlider = document.getElementById("carousel");
+let imageIndex = 0;
+
+const SUPERHERO = {
+    apiKey: "9cad86f4340a7a8860ae1bb68ebce024"
+};
+
+const STARTER_HERO_IDS = ["106", "620", "346"];
+
+const COMIC_VINE = {
+    apiKey: "bdc95979da4e2d7c44f43f24a49b6b2a7d556e4b",
+    baseUrl: "https://comicvine.gamespot.com/api"
+};
+
+const DEMO_CHARACTERS = [
+    { name: "Black Panther", id: 1009187, image: "img4.jpg" },
+    { name: "Spider-Man", id: 1009610, image: "img0.jpg" },
+    { name: "Iron Man", id: 1009368, image: "img1.jpg" }
+];
+
+const DEMO_COMICS = [
+    { title: "The Amazing Spider-Man (2018) #56", id: "1189468", issueNumber: "56", series: "The Amazing Spider-Man (2018)", image: "comicss.jpg" },
+    { title: "Captain America (2018) #1", id: "402060", issueNumber: "1", series: "Captain America (2018)", image: "img10.jpg" },
+    { title: "Guardians of the Galaxy (2020) #1", id: "502862", issueNumber: "1", series: "Guardians of the Galaxy (2020)", image: "img6.jpg" }
+];
+
+function hasValidSuperheroConfig() {
+    return !!SUPERHERO.apiKey && !SUPERHERO.apiKey.includes("YOUR_");
+}
+
+function getSuperheroResults(data) {
+    if (!data || data.response !== "success") return [];
+
+    if (Array.isArray(data.results)) {
+        return data.results;
+    }
+
+    if (data.id) {
+        return [data];
+    }
+
+    return [];
+}
+
+function isMarvelHero(hero) {
+    return hero?.biography?.publisher?.toLowerCase().includes("marvel");
+}
+
+function isMarvelIssue(issue) {
+    const publisher = issue?.volume?.publisher?.name;
+    return !publisher || publisher.toLowerCase().includes("marvel");
+}
+
+function superheroSearch(query) {
+    const cleanedQuery = query.trim();
+    const queries = [cleanedQuery];
+
+    if (cleanedQuery.includes("-")) queries.push(cleanedQuery.replace(/-/g, " "));
+    if (cleanedQuery.includes(" ")) queries.push(cleanedQuery.replace(/\s+/g, ""));
+
+    return queries.reduce((request, currentQuery) => request.catch(() => {
+        const url = `https://www.superheroapi.com/api.php/${SUPERHERO.apiKey}/search/${encodeURIComponent(currentQuery)}`;
+        return fetch(url).then((response) => {
+            if (!response.ok) throw new Error(response.statusText || "Superhero API request failed.");
+            return response.json();
+        }).then((data) => {
+            if (data?.response === "error") throw new Error(data.error || "No results found.");
+            return data;
+        });
+    }), Promise.reject(new Error("No results found.")));
+}
+
+function comicVineRequest(path, params) {
+    const callbackName = `comicVineCallback${Date.now()}${Math.random().toString(36).slice(2)}`;
+    const query = new URLSearchParams({
+        api_key: COMIC_VINE.apiKey,
+        format: "jsonp",
+        json_callback: callbackName,
+        ...params
+    });
+
+    return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        const cleanup = () => {
+            delete window[callbackName];
+            script.remove();
+        };
+
+        window[callbackName] = (data) => {
+            cleanup();
+            if (data.status_code !== 1) {
+                reject(new Error(data.error || "Comic Vine API request failed."));
+                return;
+            }
+            resolve(data);
+        };
+
+        script.onerror = () => {
+            cleanup();
+            reject(new Error("Comic Vine API request failed."));
+        };
+        script.src = `${COMIC_VINE.baseUrl}${path}?${query.toString()}`;
+        document.head.appendChild(script);
+    });
+}
+
+function setWarning(id, message) {
+    const warning = document.getElementById(id);
+    if (warning) warning.innerText = message;
+}
+
+function sliding() {
+    if (imageSlider) {
+        imageSlider.style.backgroundImage = `url(${imageArray[imageIndex]})`;
+        imageIndex = (imageIndex + 1) % imageArray.length;
     }
     setTimeout(sliding, 10000);
 }
-window.addEventListener('load', sliding);
+window.addEventListener("load", sliding);
 
+const CharacterName = document.getElementById("character");
+const SearchCharacter = document.getElementById("SearchCharacter");
+const charactersContainer = document.getElementById("charcters");
+const ComicName = document.getElementById("Comic-title-input");
+const SearchComicByTitle = document.getElementById("SearchComicByTitle");
+const ComicByID = document.getElementById("Comic-id-input");
+const SearchComicByID = document.getElementById("SearchComicByID");
+const ComicContainer = document.getElementsByClassName("comics")[0];
+const upcInput = document.getElementById("UPC-input");
+const isbnInput = document.getElementById("ISBN-input");
+const SearchComicByUPC = document.getElementById("SearchComicByUPC");
+const SearchComicByISBN = document.getElementById("SearchComicByISBN");
+const descriptionContainer = document.getElementsByClassName("description")[0];
 
-//**Fetching the Charcters Image and id using Name */
-let CharacterName = document.getElementById("character")
-let SearchCharacter = document.getElementById("SearchCharacter")
-let charactersContainer = document.getElementById("charcters")
-
-//https://gateway.marvel.com/v1/public/comics?titleStartsWith=iron&limit=15&ts=1&apikey=97f7d31035731dec9658307c50fc8aca&hash=11df1c65f26cd067ffd321103f292e75
-CharacterName.addEventListener("keyup", function (e) {
-    if (e.key == "Enter") {
-        if (CharacterName.value == "") {
-            document.getElementById("Warning1").innerText = "*Please Enter the Character Name"
-        }
-        else {
-            document.getElementById("Warning1").innerText = ""
-            loadCharcterID();
-        }
-    }
-})
-SearchCharacter.addEventListener("click", function () {
-    if (CharacterName.value == "") {
-        document.getElementById("Warning1").innerText = "*Please Enter the Character Name"
-    }
-    else {
-        document.getElementById("Warning1").innerText = ""
-        loadCharcterID();
-    }
-})
-function loadCharcterID() {
-    removePreviousCharacter();
-    let url = `https://gateway.marvel.com/v1/public/characters?nameStartsWith=${CharacterName.value}&limit=15&ts=1&apikey=${API}&hash=${Hash}`
-    fetch(url).then(function (response) {
-        // console.log(response);
-        if (!response.ok) {
-            document.getElementById("Warning1").innerText = response.statusText
-        }
-        else {
-            return response.json();
-        }
-
-    }).then(function (data) {
-        console.log(data);
-        displayCharacters(data);
-    }).catch(function (err) {
-        document.getElementById("Warning1").innerText = err
-    })
-}
 function displayCharacters(data) {
-    CharacterName.value = ""
-    for (let i = 0; i < data.data.results.length; i++) {
-        if (!data.data.results[i].thumbnail.path.includes("image_not_available")) {
-            let chaarcterbox = document.createElement("div");
-            let characterImg = data.data.results[i].thumbnail.path + '/portrait_uncanny.jpg'
-            let imgDiv = document.createElement("div");
-            imgDiv.className = "img-0";
+    const results = getSuperheroResults(data).filter(isMarvelHero);
 
-            let detailsDiv = document.createElement("div");
-            let name = document.createElement("p")
-            let id = document.createElement("p")
-
-            name.innerHTML = data.data.results[i].name;
-            id.innerHTML = "ID: " + data.data.results[i].id;
-            imgDiv.style.backgroundImage = `linear-gradient(to bottom, transparent 55%, black), url(${characterImg})`
-
-            chaarcterbox.className = "character"
-            detailsDiv.className = "details"
-
-            detailsDiv.appendChild(name)
-            detailsDiv.appendChild(id)
-
-            chaarcterbox.appendChild(imgDiv)
-            chaarcterbox.appendChild(detailsDiv)
-
-            charactersContainer.appendChild(chaarcterbox)
-        }
+    if (!results.length) {
+        displayFallbackCharacters();
+        return;
     }
+
+    CharacterName.value = "";
+    removePreviousCharacter();
+
+    for (let i = 0; i < results.length; i++) {
+        const hero = results[i];
+        if (!hero || !hero.name) continue;
+
+        const characterBox = document.createElement("div");
+        const imgDiv = document.createElement("div");
+        const detailsDiv = document.createElement("div");
+        const name = document.createElement("p");
+        const id = document.createElement("p");
+
+        imgDiv.className = "img-0";
+        characterBox.className = "character";
+        detailsDiv.className = "details";
+
+        name.innerText = hero.name;
+        id.innerText = "ID: " + hero.id;
+        imgDiv.style.backgroundImage = `linear-gradient(to bottom, transparent 55%, black), url(${hero.image?.url || "https://via.placeholder.com/500x750?text=No+Image"})`;
+
+        detailsDiv.appendChild(name);
+        detailsDiv.appendChild(id);
+        characterBox.appendChild(imgDiv);
+        characterBox.appendChild(detailsDiv);
+        charactersContainer.appendChild(characterBox);
+    }
+}
+
+function displayFallbackCharacters() {
+    removePreviousCharacter();
+    DEMO_CHARACTERS.forEach((hero) => {
+        const characterBox = document.createElement("div");
+        const imgDiv = document.createElement("div");
+        const detailsDiv = document.createElement("div");
+        const name = document.createElement("p");
+        const id = document.createElement("p");
+
+        imgDiv.className = "img-0";
+        characterBox.className = "character";
+        detailsDiv.className = "details";
+
+        name.innerText = hero.name;
+        id.innerText = "ID: " + hero.id;
+        imgDiv.style.backgroundImage = `linear-gradient(to bottom, transparent 55%, black), url(${hero.image})`;
+
+        detailsDiv.appendChild(name);
+        detailsDiv.appendChild(id);
+        characterBox.appendChild(imgDiv);
+        characterBox.appendChild(detailsDiv);
+        charactersContainer.appendChild(characterBox);
+    });
 }
 
 function removePreviousCharacter() {
-    charactersContainer.innerHTML = ""
+    if (charactersContainer) charactersContainer.innerHTML = "";
 }
 
+function loadCharacterByName() {
+    removePreviousCharacter();
 
+    if (!hasValidSuperheroConfig()) {
+        displayFallbackCharacters();
+        setWarning("Warning1", "Demo mode active: add your Superhero API token in the script to enable live results.");
+        return;
+    }
 
-//***Searching Comics by title */
-let ComicName = document.getElementById("Comic-title-input")
-let SearchComicByTitle = document.getElementById("SearchComicByTitle")
-let ComicContainer = document.getElementsByClassName("comics")[0]
-ComicName.addEventListener("keyup", function (e) {
-    if (e.key == "Enter") {
+    superheroSearch(CharacterName.value)
+        .then((data) => displayCharacters(data))
+        .catch((err) => {
+            console.error(err);
+            setWarning("Warning1", "No character found. Try a full name, such as Iron Man or Spider-Man.");
+            removePreviousCharacter();
+        });
+}
 
-        if (ComicName.value == "") {
-            document.getElementById("Warning2").innerText = "*Please Enter the Comic Name"
+function loadStarterCharacters() {
+    if (!hasValidSuperheroConfig()) {
+        displayFallbackCharacters();
+        return;
+    }
+
+    Promise.all(STARTER_HERO_IDS.map((id) => fetch(
+        `https://www.superheroapi.com/api.php/${SUPERHERO.apiKey}/${id}`
+    ).then((response) => {
+        if (!response.ok) throw new Error("Unable to load starter character.");
+        return response.json();
+    })))
+        .then((heroes) => {
+            const results = heroes.filter((hero) => hero?.response === "success");
+            if (!results.length) throw new Error("No starter characters found.");
+
+            displayCharacters({ response: "success", results });
+        })
+        .catch((err) => {
+            console.error(err);
+            displayFallbackCharacters();
+        });
+}
+
+CharacterName.addEventListener("keyup", function (e) {
+    if (e.key === "Enter") {
+        if (!CharacterName.value.trim()) {
+            setWarning("Warning1", "*Please Enter the Character Name");
+        } else {
+            setWarning("Warning1", "");
+            loadCharacterByName();
         }
-        else {
-            document.getElementById("Warning2").innerText = ""
-            loadComicByName();
-        }
     }
-})
-SearchComicByTitle.addEventListener("click", function (e) {
-    if (ComicName.value == "") {
-        document.getElementById("Warning2").innerText = "*Please Enter the Comic Name"
+});
+
+SearchCharacter.addEventListener("click", function () {
+    if (!CharacterName.value.trim()) {
+        setWarning("Warning1", "*Please Enter the Character Name");
+    } else {
+        setWarning("Warning1", "");
+        loadCharacterByName();
     }
-    else {
-        document.getElementById("Warning2").innerText = ""
-        loadComicByName();
-    }
-})
-function loadComicByName() {
+});
+
+function displayFallbackComics() {
     removePreviousComics();
-    let url = `https://gateway.marvel.com/v1/public/comics?titleStartsWith=${ComicName.value}&limit=15&ts=1&apikey=${API}&hash=${Hash}`
-    fetch(url).then(function (response) {
-        console.log(response);
-        if (!response.ok) {
-            document.getElementById("Warning2").innerText = response.statusText
-        }
-        else {
-            return response.json();
-        }
+    DEMO_COMICS.forEach((comic) => {
+        const comicBox = document.createElement("div");
+        const comicImg = document.createElement("div");
+        const detailsDiv = document.createElement("div");
+        const title = document.createElement("p");
+        const isbn = document.createElement("p");
+        const upc = document.createElement("p");
+        const series = document.createElement("p");
 
-    }).then(function (data) {
-        // console.log(data);
-        displayComics(data);
-    })
-}
-//*Search comic by character id */
-let ComicByID = document.getElementById("Comic-id-input")
-let SearchComicByID = document.getElementById("SearchComicByID")
+        comicBox.className = "comic";
+        comicImg.className = "img-0";
+        detailsDiv.className = "details";
 
-ComicByID.addEventListener("keyup", function (e) {
-    if (e.key == "Enter") {
-        if (ComicByID.value == "") {
-            document.getElementById("Warning2").innerText = "*Please Enter the Comic Name"
-        }
-        else {
-            document.getElementById("Warning2").innerText = ""
-            loadComicByID();
-        }
-    }
-})
-SearchComicByID.addEventListener("click", function (e) {
-    if (ComicByID.value == "") {
-        document.getElementById("Warning2").innerText = "*Please Enter the Comic Name"
-    }
-    else {
-        document.getElementById("Warning2").innerText = ""
-        loadComicByID();
-    }
-})
-function loadComicByID() {
-    removePreviousComics();
-    let url = `https://gateway.marvel.com/v1/public/characters/${ComicByID.value}/comics?limit=100&ts=1&apikey=${API}&hash=${Hash}`;
-    fetch(url).then(function (response) {
-        // console.log(response);
-        if (!response.ok) {
-            document.getElementById("Warning2").innerText = response.statusText
-        }
-        else {
-            return response.json();
-        }
+        title.innerText = comic.title;
+        upc.innerText = `ID: ${comic.id}`;
+        isbn.innerText = `Issue: #${comic.issueNumber}`;
+        series.innerText = `Series: ${comic.series}`;
+        comicImg.style.backgroundImage = `linear-gradient(to bottom, transparent 55%, black), url(${comic.image})`;
 
-    }).then(function (data) {
-        // console.log(data);
-        displayComics(data);
-    })
-
-}
-
-
-
-function displayComics(data) {
-    ComicByID.value = ""
-    ComicName.value = ""
-    console.log(data);
-    for (let i = 0; i < data.data.results.length; i++) {
-        if (!data.data.results[i].thumbnail.path.includes("image_not_available")) {
-            let comicbox = document.createElement("div")
-            let comicImg = document.createElement("div")
-            let detailsDiv = document.createElement("div")
-            let ComicName = document.createElement("p")
-            let ComicISBN = document.createElement("p")
-            let comicUPC = document.createElement("p")
-
-            let imgpath = data.data.results[i].thumbnail.path + '/portrait_uncanny.jpg';
-
-            comicImg.className = "img-0"
-            detailsDiv.className = "details"
-            comicbox.className = "comic"
-
-            comicImg.style.backgroundImage = 'linear-gradient(to bottom, transparent 55%, black), url(' + imgpath + ')';
-            ComicName.innerHTML = data.data.results[i].title;
-            comicUPC.innerHTML = "UPC: " + data.data.results[i].upc;
-            ComicISBN.innerHTML = "ISBN: " + data.data.results[i].isbn;
-
-            if (comicUPC.innerHTML == "UPC: ") {
-                comicUPC.innerHTML = "NOt AVailable"
-            }
-            if (ComicISBN.innerHTML == "ISBN: ") {
-                ComicISBN.innerHTML = "NOt AVailable"
-            }
-
-            detailsDiv.appendChild(ComicName)
-            detailsDiv.appendChild(comicUPC)
-            detailsDiv.appendChild(ComicISBN)
-
-            comicbox.appendChild(comicImg)
-            comicbox.appendChild(detailsDiv)
-
-
-            ComicContainer.appendChild(comicbox)
-        }
-    }
+        detailsDiv.appendChild(title);
+        detailsDiv.appendChild(upc);
+        detailsDiv.appendChild(isbn);
+        detailsDiv.appendChild(series);
+        comicBox.appendChild(comicImg);
+        comicBox.appendChild(detailsDiv);
+        ComicContainer.appendChild(comicBox);
+    });
 }
 
 function removePreviousComics() {
-    ComicContainer.innerHTML = "";
+    if (ComicContainer) ComicContainer.innerHTML = "";
 }
 
+function displayComicVineIssues(issues) {
+    removePreviousComics();
 
+    if (!issues.length) {
+        displayFallbackComics();
+        return;
+    }
 
+    issues.forEach((issue) => {
+        const comicBox = document.createElement("div");
+        const comicImg = document.createElement("div");
+        const detailsDiv = document.createElement("div");
+        const title = document.createElement("p");
+        const comicId = document.createElement("p");
+        const issueNumber = document.createElement("p");
+        const volume = document.createElement("p");
 
-// **----------------------------------------Descrption Details--------------------------------------------------------
-let upcInput = document.getElementById("UPC-input")
-let isbnInput = document.getElementById("ISBN-input")
+        comicBox.className = "comic";
+        comicImg.className = "img-0";
+        detailsDiv.className = "details";
+        title.innerText = issue.name || `${issue.volume?.name || "Untitled issue"}${issue.issue_number ? ` #${issue.issue_number}` : ""}`;
+        comicId.innerText = `ID: ${issue.id || "Not Available"}`;
+        issueNumber.innerText = issue.issue_number ? `Issue: #${issue.issue_number}` : "Issue: Not Available";
+        volume.innerText = issue.volume?.name ? `Series: ${issue.volume.name}` : "Series: Not Available";
+        comicImg.style.backgroundImage = `linear-gradient(to bottom, transparent 55%, black), url(${issue.image?.original_url || issue.image?.super_url || "https://via.placeholder.com/500x750?text=No+Cover"})`;
 
-let SearchComicByUPC = document.getElementById("SearchComicByUPC")
-let SearchComicByISBN = document.getElementById("SearchComicByISBN")
+        detailsDiv.appendChild(title);
+        detailsDiv.appendChild(comicId);
+        detailsDiv.appendChild(issueNumber);
+        detailsDiv.appendChild(volume);
+        comicBox.appendChild(comicImg);
+        comicBox.appendChild(detailsDiv);
+        ComicContainer.appendChild(comicBox);
+    });
+}
 
-let descriptionContainer = document.getElementsByClassName("description")[0]
+function loadComicVineIssuesForHero(hero) {
+    return comicVineRequest("/search/", {
+        query: hero.name,
+        resources: "character",
+        limit: "1"
+    })
+        .then((searchData) => {
+            const character = searchData.results?.[0];
+            if (!character?.id) throw new Error("Character was not found in Comic Vine.");
+
+            return comicVineRequest(`/character/4005-${character.id}/`, {
+                field_list: "issue_credits"
+            });
+        })
+        .then((characterData) => {
+            const credits = characterData.results?.issue_credits || [];
+            return Promise.all(credits.slice(0, 12).map((credit) => {
+                const issueId = credit.api_detail_url?.match(/4000-(\d+)/)?.[1] || credit.id;
+                if (!issueId) return null;
+
+                return comicVineRequest(`/issue/4000-${issueId}/`, {
+                    field_list: "id,name,issue_number,image,volume"
+                }).then((issueData) => issueData.results);
+            })).then((issues) => issues.filter(isMarvelIssue));
+        })
+        .then((issues) => issues.filter(Boolean));
+}
+
+function loadComicVineIssuesByTitle(title) {
+    return comicVineRequest("/search/", {
+        query: title.trim(),
+        resources: "issue",
+        limit: "12",
+        field_list: "id,name,issue_number,image,volume"
+    }).then((searchData) => Promise.all((searchData.results || []).map((issue) => {
+        const issueId = issue.api_detail_url?.match(/4000-(\d+)/)?.[1] || issue.id;
+        if (!issueId) return null;
+
+        return comicVineRequest(`/issue/4000-${issueId}/`, {
+            field_list: "id,name,issue_number,image,volume,description"
+        }).then((issueData) => issueData.results);
+    }))).then((issues) => issues.filter(Boolean).filter(isMarvelIssue));
+}
+
+function loadComicByName() {
+    removePreviousComics();
+
+    loadComicVineIssuesByTitle(ComicName.value)
+        .then((issues) => {
+            displayComicVineIssues(issues);
+            setWarning("Warning2", issues.length ? "" : "No comic issues found.");
+        })
+        .catch((err) => {
+            console.error(err);
+            setWarning("Warning2", "Unable to fetch comic issues from Comic Vine.");
+            displayFallbackComics();
+        });
+}
+
+ComicName.addEventListener("keyup", function (e) {
+    if (e.key === "Enter") {
+        if (!ComicName.value.trim()) {
+            setWarning("Warning2", "*Please Enter the Comic Name");
+        } else {
+            setWarning("Warning2", "");
+            loadComicByName();
+        }
+    }
+});
+
+SearchComicByTitle.addEventListener("click", function () {
+    if (!ComicName.value.trim()) {
+        setWarning("Warning2", "*Please Enter the Comic Name");
+    } else {
+        setWarning("Warning2", "");
+        loadComicByName();
+    }
+});
+
+function loadComicByID() {
+    removePreviousComics();
+
+    if (!hasValidSuperheroConfig()) {
+        displayFallbackComics();
+        setWarning("Warning2", "Demo mode active: add your Superhero API token in the script to enable live results.");
+        return;
+    }
+
+    const url = `https://www.superheroapi.com/api.php/${SUPERHERO.apiKey}/${encodeURIComponent(ComicByID.value.trim())}`;
+
+    fetch(url)
+        .then((response) => {
+            if (!response.ok) throw new Error(response.statusText || "Superhero API request failed.");
+            return response.json();
+        })
+        .then((data) => {
+            if (data?.response === "error") {
+                throw new Error(data.error || "No results found.");
+            }
+            const hero = getSuperheroResults(data)[0];
+            if (!hero?.name) throw new Error("Character ID was not found.");
+
+            return loadComicVineIssuesForHero(hero);
+        })
+        .then((issues) => {
+            displayComicVineIssues(issues);
+            setWarning("Warning2", issues.length ? "" : "No comic issues found for this character.");
+        })
+        .catch((err) => {
+            console.error(err);
+            setWarning("Warning2", "Unable to fetch this character's comics. Showing demo content instead.");
+            displayFallbackComics();
+        });
+}
+
+ComicByID.addEventListener("keyup", function (e) {
+    if (e.key === "Enter") {
+        if (!ComicByID.value.trim()) {
+            setWarning("Warning2", "*Please Enter the Character ID");
+        } else {
+            setWarning("Warning2", "");
+            loadComicByID();
+        }
+    }
+});
+
+SearchComicByID.addEventListener("click", function () {
+    if (!ComicByID.value.trim()) {
+        setWarning("Warning2", "*Please Enter the Character ID");
+    } else {
+        setWarning("Warning2", "");
+        loadComicByID();
+    }
+});
+
+function displayFallbackDescription() {
+    clearDescription();
+
+    const imgDiv = document.createElement("div");
+    const comicDesc = document.createElement("div");
+    const detailsFile = document.createElement("div");
+    const title = document.createElement("h2");
+    const desc = document.createElement("p");
+
+    imgDiv.className = "img-0";
+    detailsFile.className = "description-details";
+    comicDesc.className = "comic-img";
+    imgDiv.style.backgroundImage = "linear-gradient(to bottom, transparent 55%, black), url(dominoe.jpg)";
+    title.innerText = "X-Men (2010) #29";
+    desc.innerText = "With the X-Men suffering from inner turmoil, a lost team of Skrulls infiltrates Utopia. As Pixie is discovered missing, the X-Men fear the worst.";
+
+    detailsFile.appendChild(title);
+    detailsFile.appendChild(desc);
+    comicDesc.appendChild(imgDiv);
+    descriptionContainer.appendChild(comicDesc);
+    descriptionContainer.appendChild(detailsFile);
+}
+
+function displayComicVineDescription(issue) {
+    if (!issue) {
+        displayFallbackDescription();
+        return;
+    }
+
+    clearDescription();
+
+    const imgDiv = document.createElement("div");
+    const comicDesc = document.createElement("div");
+    const detailsFile = document.createElement("div");
+    const title = document.createElement("h2");
+    const desc = document.createElement("p");
+
+    const series = issue.volume?.name ? `Series: ${issue.volume.name}` : "";
+    const issueNumber = issue.issue_number ? `Issue: #${issue.issue_number}` : "";
+    const description = issue.description
+        ? new DOMParser().parseFromString(issue.description, "text/html").body.textContent.trim()
+        : "Description not available for this issue.";
+
+    imgDiv.className = "img-0";
+    detailsFile.className = "description-details";
+    comicDesc.className = "comic-img";
+    imgDiv.style.backgroundImage = `linear-gradient(to bottom, transparent 55%, black), url(${issue.image?.original_url || issue.image?.super_url || "https://via.placeholder.com/500x750?text=No+Cover"})`;
+    title.innerText = issue.name || "Untitled comic issue";
+    desc.innerText = [series, issueNumber, description].filter(Boolean).join("\n\n");
+
+    detailsFile.appendChild(title);
+    detailsFile.appendChild(desc);
+    comicDesc.appendChild(imgDiv);
+    descriptionContainer.appendChild(comicDesc);
+    descriptionContainer.appendChild(detailsFile);
+}
+
+function loadComicVineDescription(value) {
+    clearDescription();
+
+    const searchValue = value.trim();
+    const issueId = searchValue.match(/^(?:4000-)?(\d+)$/)?.[1];
+    const request = issueId
+        ? comicVineRequest(`/issue/4000-${issueId}/`, {
+            field_list: "id,name,description,issue_number,image,volume"
+        })
+        : comicVineRequest("/search/", {
+            query: searchValue,
+            resources: "issue",
+            limit: "1"
+        }).then((searchData) => {
+            const issue = searchData.results?.[0];
+            if (!issue?.api_detail_url) throw new Error("Comic issue was not found.");
+
+            const foundIssueId = issue.api_detail_url.match(/4000-(\d+)/)?.[1] || issue.id;
+            if (!foundIssueId) throw new Error("Comic issue was not found.");
+
+            return comicVineRequest(`/issue/4000-${foundIssueId}/`, {
+                field_list: "id,name,description,issue_number,image,volume"
+            });
+        });
+
+    request
+        .then((issueData) => {
+            displayComicVineDescription(issueData.results);
+            setWarning("Warning3", "");
+        })
+        .catch((err) => {
+            console.error(err);
+            setWarning("Warning3", "Comic issue not found. Try its title or a number listed by Comic Vine.");
+            displayFallbackDescription();
+        });
+}
+
+function loadDescriptionByISBN() {
+    loadComicVineDescription(isbnInput.value);
+}
+
+function loadDescriptionByUPC() {
+    loadComicVineDescription(upcInput.value);
+}
+
+function clearDescription() {
+    if (descriptionContainer) descriptionContainer.innerHTML = "";
+}
 
 upcInput.addEventListener("keyup", function (e) {
-    if (e.key == "Enter") {
-        if (upcInput.value == "") {
-            document.getElementById("Warning3").innerText = "*Please Enter the UPC ID"
+    if (e.key === "Enter") {
+        if (!upcInput.value.trim()) {
+            setWarning("Warning3", "*Please Enter the UPC ID");
+        } else {
+            setWarning("Warning3", "");
+            loadDescriptionByUPC();
         }
-        else {
-            document.getElementById("Warning3").innerText = ""
-            loadDescriptionByUpc();
-        }
     }
-})
+});
 
-SearchComicByUPC.addEventListener("click", function (e) {
-    if (upcInput.value == "") {
-        document.getElementById("Warning3").innerText = "*Please Enter the UPC ID"
+SearchComicByUPC.addEventListener("click", function () {
+    if (!upcInput.value.trim()) {
+        setWarning("Warning3", "*Please Enter the UPC ID");
+    } else {
+        setWarning("Warning3", "");
+        loadDescriptionByUPC();
     }
-    else {
-        document.getElementById("Warning3").innerText = ""
-        loadDescriptionByUpc();
-    }
-})
-
+});
 
 isbnInput.addEventListener("keyup", function (e) {
-    if (e.key == "Enter") {
-        if (isbnInput.value == "") {
-            document.getElementById("Warning3").innerText = "*Please Enter the ISBN ID"
-        }
-        else {
-            document.getElementById("Warning3").innerText = ""
-            loadDescriptionByisbn();
+    if (e.key === "Enter") {
+        if (!isbnInput.value.trim()) {
+            setWarning("Warning3", "*Please Enter the ISBN ID");
+        } else {
+            setWarning("Warning3", "");
+            loadDescriptionByISBN();
         }
     }
-})
+});
 
-SearchComicByISBN.addEventListener("click", function (e) {
-    if (isbnInput.value == "") {
-        document.getElementById("Warning3").innerText = "*Please Enter the ISBN ID"
+SearchComicByISBN.addEventListener("click", function () {
+    if (!isbnInput.value.trim()) {
+        setWarning("Warning3", "*Please Enter the ISBN ID");
+    } else {
+        setWarning("Warning3", "");
+        loadDescriptionByISBN();
     }
-    else {
-        document.getElementById("Warning3").innerText = ""
-        loadDescriptionByisbn();
-    }
-})
+});
 
-
-function loadDescriptionByisbn() {
-    clearDescrption();
-    let url = `https://gateway.marvel.com/v1/public/comics?isbn=${isbnInput.value}&ts=1&apikey=${API}&hash=${Hash}`;
-    fetch(url).then(function (response) {
-        // console.log(response);
-        if (!response.ok) {
-            document.getElementById("Warning3").innerText = response.statusText
-        }
-        else {
-            return response.json();
-        }
-
-    }).then(function (data) {
-        // console.log(data);
-        displayDescription(data);
-    })
-
-}
-
-function loadDescriptionByUpc() {
-    clearDescrption();
-    let url = `https://gateway.marvel.com/v1/public/comics?upc=${upcInput.value}&ts=1&apikey=${API}&hash=${Hash}`;
-    fetch(url).then(function (response) {
-        // console.log(response);
-        if (!response.ok) {
-            document.getElementById("Warning3").innerText = response.statusText
-        }
-        else {
-            return response.json();
-        }
-
-    }).then(function (data) {
-        // console.log(data);
-        displayDescription(data);
-    })
-}
-
-function displayDescription(data) {
-    console.log(data);
-    let imagePath = data.data.results[0].thumbnail.path + '/portrait_uncanny.jpg'
-    let imgdiv = document.createElement('div')
-    let comicDesc = document.createElement('div')
-    let detailsfile = document.createElement('div')
-    let title = document.createElement('h2')
-    let desc = document.createElement('p')
-
-    imgdiv.className = "img-0"
-    detailsfile.className = "description-details"
-    comicDesc.className = "comic-img"
-
-    imgdiv.style.backgroundImage = 'linear-gradient(to bottom, transparent 55%, black), url(' + imagePath + ')'
-    title.innerHTML = data.data.results[0].title
-
-    if (data.data.results[0].description == null) {
-        desc.innerHTML = "Sorry Not Available 🥲🥲🥲"
-    }
-    else {
-        desc.innerHTML = data.data.results[0].description
-    }
-
-    detailsfile.appendChild(title)
-    detailsfile.appendChild(desc)
-
-    comicDesc.appendChild(imgdiv)
-
-    descriptionContainer.appendChild(comicDesc)
-    descriptionContainer.appendChild(detailsfile)
-
-}
-
-
-function clearDescrption() {
-    descriptionContainer.innerHTML = ""
-}
-// clearDescrption();
+window.addEventListener("DOMContentLoaded", () => {
+    loadStarterCharacters();
+    displayFallbackComics();
+    displayFallbackDescription();
+});

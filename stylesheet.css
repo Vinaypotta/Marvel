@@ -1,8 +1,6 @@
 @font-face {
     font-family: 'marvelregular';
-    src: url('marvelregular-dj83.woff2') format('woff2'),
-         url('marvelregular-dj83.woff') format('woff');
+    src: url('marvelregular-dj83.woff2') format('woff2');
     font-weight: normal;
     font-style: normal;
-
-}
+}
